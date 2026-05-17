@@ -8,8 +8,15 @@ app.get("/", (req, res) => {
   res.send("API Gateway is running");
 });
 
+// Routes
+const transactionRoutes = require("./routes/transaction.routes");
+
+app.use("/api", transactionRoutes);
+
 const PORT = 3000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+module.exports = app;

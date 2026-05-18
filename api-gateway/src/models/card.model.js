@@ -1,16 +1,19 @@
-const cards = [
-  { id: "1", userId: "u1", balance: 100, status: "active" },
-];
+const pool = require("../config/db");
 
-const getCardById = (id) => {
-  return cards.find((c) => c.id === id);
+const getCardById = async (id) => {
+  const result = await pool.query(
+    "SELECT * FROM cards WHERE id = $1",
+    [id]
+  );
+
+  return result.rows[0];
 };
 
-const updateCardBalance = (id, newBalance) => {
-  const card = cards.find((c) => c.id === id);
-  if (card) {
-    card.balance = newBalance;
-  }
+const updateCardBalance = async (id, newBalance) => {
+  await pool.query(
+    "UPDATE cards SET balance = $1 WHERE id = $2",
+    [newBalance, id]
+  );
 };
 
 module.exports = {

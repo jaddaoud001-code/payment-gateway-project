@@ -1,20 +1,29 @@
-const { processTransaction, fetchTransactions } = require("../services/transaction.service");
+const {
+  processTransaction,
+  fetchTransactions,
+} = require("../services/transaction.service");
 
-const createTransactionController = (req, res) => {
+const createTransactionController = async (req, res) => {
   try {
-    const transaction = processTransaction(req.body);
+    const transaction = await processTransaction(req.body);
+
     res.status(201).json(transaction);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({
+      error: error.message,
+    });
   }
 };
 
-const getTransactionsController = (req, res) => {
+const getTransactionsController = async (req, res) => {
   try {
-    const transactions = fetchTransactions();
+    const transactions = await fetchTransactions();
+
     res.status(200).json(transactions);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      error: error.message,
+    });
   }
 };
 

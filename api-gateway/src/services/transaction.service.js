@@ -1,8 +1,12 @@
 const { getCardById, updateCardBalance } = require("../models/card.model");
-const { createTransaction } = require("../models/transaction.model");
+
+const {
+  createTransaction,
+  getTransactions,
+} = require("../models/transaction.model");
 
 const processTransaction = ({ cardId, amount, stationId }) => {
-  // 1. Validate input
+  // Validate input
   if (!cardId || !amount || !stationId) {
     throw new Error("Missing required fields");
   }
@@ -11,8 +15,9 @@ const processTransaction = ({ cardId, amount, stationId }) => {
     throw new Error("Invalid amount");
   }
 
-  // 2. Get card
+  // Get card
   const card = getCardById(cardId);
+
   if (!card) {
     throw new Error("Card not found");
   }
@@ -21,16 +26,17 @@ const processTransaction = ({ cardId, amount, stationId }) => {
     throw new Error("Card is not active");
   }
 
-  // 3. Check balance
+  // Check balance
   if (card.balance < amount) {
     throw new Error("Insufficient balance");
   }
 
-  // 4. Deduct balance
+  // Deduct balance
   const newBalance = card.balance - amount;
+
   updateCardBalance(cardId, newBalance);
 
-  // 5. Create transaction
+  // Create transaction
   const transaction = {
     id: Date.now().toString(),
     cardId,
@@ -42,6 +48,11 @@ const processTransaction = ({ cardId, amount, stationId }) => {
   return createTransaction(transaction);
 };
 
+const fetchTransactions = () => {
+  return getTransactions();
+};
+
 module.exports = {
   processTransaction,
+  fetchTransactions,
 };

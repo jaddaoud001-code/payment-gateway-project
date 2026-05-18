@@ -1,4 +1,4 @@
-const { processTransaction } = require("../services/transaction.service");
+const { processTransaction, fetchTransactions } = require("../services/transaction.service");
 
 const createTransactionController = (req, res) => {
   try {
@@ -9,6 +9,16 @@ const createTransactionController = (req, res) => {
   }
 };
 
+const getTransactionsController = (req, res) => {
+  try {
+    const transactions = fetchTransactions();
+    res.status(200).json(transactions);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   createTransactionController,
+  getTransactionsController,
 };

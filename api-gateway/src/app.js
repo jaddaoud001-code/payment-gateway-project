@@ -10,8 +10,10 @@ app.get("/", (req, res) => {
 
 // Routes
 const transactionRoutes = require("./routes/transaction.routes");
-
 app.use("/api", transactionRoutes);
+
+const authRoutes = require("./routes/auth.routes");
+app.use("/auth", authRoutes);
 
 const PORT = 3000;
 

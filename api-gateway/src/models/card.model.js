@@ -9,6 +9,15 @@ const getCardById = async (id) => {
   return result.rows[0];
 };
 
+const getCardByUserId = async (userId) => {
+  const result = await pool.query(
+    "SELECT * FROM cards WHERE user_id = $1",
+    [userId]
+  );
+
+  return result.rows[0];
+};
+
 const updateCardBalance = async (id, newBalance) => {
   await pool.query(
     "UPDATE cards SET balance = $1 WHERE id = $2",
@@ -18,5 +27,6 @@ const updateCardBalance = async (id, newBalance) => {
 
 module.exports = {
   getCardById,
+  getCardByUserId,
   updateCardBalance,
 };

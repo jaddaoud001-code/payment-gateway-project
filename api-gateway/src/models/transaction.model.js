@@ -25,7 +25,21 @@ const getTransactions = async () => {
   return result.rows;
 };
 
+const getTransactionsByCardId = async (cardId) => {
+  const result = await pool.query(
+    `
+    SELECT * FROM transactions
+    WHERE card_id = $1
+    ORDER BY created_at DESC
+    `,
+    [cardId]
+  );
+
+  return result.rows;
+};
+
 module.exports = {
   createTransaction,
   getTransactions,
+  getTransactionsByCardId,
 };

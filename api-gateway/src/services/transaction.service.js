@@ -1,19 +1,21 @@
 const {
   getCardById,
+  getCardByUserId,
   updateCardBalance,
 } = require("../models/card.model");
 
 const {
   createTransaction,
   getTransactions,
+  getTransactionsByCardId,
 } = require("../models/transaction.model");
 
 const processTransaction = async ({
-  cardId,
+  userId,
   amount,
   stationId,
 }) => {
-  if (!cardId || !amount || !stationId) {
+  if (!amount || !stationId) {
     throw new Error("Missing required fields");
   }
 
@@ -21,7 +23,7 @@ const processTransaction = async ({
     throw new Error("Invalid amount");
   }
 
-  const card = await getCardById(cardId);
+  const card = await getCardByUserId(userId);
 
   if (!card) {
     throw new Error("Card not found");
@@ -37,17 +39,29 @@ const processTransaction = async ({
 
   const newBalance = Number(card.balance) - amount;
 
-  await updateCardBalance(cardId, newBalance);
+  await updateCardBalance(card.id, newBalance);
 
   return await createTransaction({
-    cardId,
+    cardId: card.id,
     amount,
     stationId,
   });
 };
 
-const fetchTransactions = async () => {
-  return await getTransactions();
+const fetchTransactions = async (user) => {
+  // Admin can see all transactions
+  if (user.role === "admin") {
+    return await getTransactions();
+  }
+
+  // Normal users only see their own transactions
+  const card = await getCardByUserId(user.id);
+
+  if (!card) {
+    throw new Error("Card not found");
+  }
+
+  return await getTransactionsByCardId(card.id);
 };
 
 module.exports = {

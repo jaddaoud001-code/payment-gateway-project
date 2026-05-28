@@ -10,42 +10,66 @@ const {
   getTransactionsByCardId,
 } = require("../models/transaction.model");
 
+const pool = require("../config/db");
+
 const processTransaction = async ({
   userId,
   amount,
   stationId,
 }) => {
-  if (!amount || !stationId) {
-    throw new Error("Missing required fields");
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    if (!amount || !stationId) {
+      throw new Error("Missing required fields");
+    }
+
+    if (amount <= 0) {
+      throw new Error("Invalid amount");
+    }
+
+    const card = await getCardByUserId(userId);
+
+    if (!card) {
+      throw new Error("Card not found");
+    }
+
+    if (card.status !== "active") {
+      throw new Error("Card is not active");
+    }
+
+    if (Number(card.balance) < amount) {
+      throw new Error("Insufficient balance");
+    }
+
+    const newBalance =
+      Number(card.balance) - amount;
+
+    await updateCardBalance(
+      client,
+      card.id,
+      newBalance
+    );
+
+    const transaction =
+      await createTransaction(client, {
+        cardId: card.id,
+        amount,
+        stationId,
+      });
+
+    await client.query("COMMIT");
+
+    return transaction;
+  } catch (error) {
+    await client.query("ROLLBACK");
+
+    throw error;
+  } finally {
+    client.release();
   }
-
-  if (amount <= 0) {
-    throw new Error("Invalid amount");
-  }
-
-  const card = await getCardByUserId(userId);
-
-  if (!card) {
-    throw new Error("Card not found");
-  }
-
-  if (card.status !== "active") {
-    throw new Error("Card is not active");
-  }
-
-  if (Number(card.balance) < amount) {
-    throw new Error("Insufficient balance");
-  }
-
-  const newBalance = Number(card.balance) - amount;
-
-  await updateCardBalance(card.id, newBalance);
-
-  return await createTransaction({
-    cardId: card.id,
-    amount,
-    stationId,
-  });
 };
 
 const fetchTransactions = async (user) => {

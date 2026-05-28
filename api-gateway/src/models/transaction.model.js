@@ -1,11 +1,14 @@
 const pool = require("../config/db");
 
-const createTransaction = async ({
-  cardId,
-  amount,
-  stationId,
-}) => {
-  const result = await pool.query(
+const createTransaction = async (
+  client,
+  {
+    cardId,
+    amount,
+    stationId,
+  }
+) => {
+  const result = await client.query(
     `
     INSERT INTO transactions (card_id, amount, station_id)
     VALUES ($1, $2, $3)

@@ -18,8 +18,12 @@ const getCardByUserId = async (userId) => {
   return result.rows[0];
 };
 
-const updateCardBalance = async (id, newBalance) => {
-  await pool.query(
+const updateCardBalance = async (
+  client,
+  id,
+  newBalance
+) => {
+  await client.query(
     "UPDATE cards SET balance = $1 WHERE id = $2",
     [newBalance, id]
   );

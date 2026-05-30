@@ -17,6 +17,9 @@ app.use("/api", transactionRoutes);
 const authRoutes = require("./routes/auth.routes");
 app.use("/auth", authRoutes);
 
+const cardRoutes =
+  require("./routes/card.routes");
+
 const PORT = 3000;
 
 app.listen(PORT, () => {
@@ -24,5 +27,7 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
+
+app.use("/cards", cardRoutes);
 
 app.use(errorMiddleware);

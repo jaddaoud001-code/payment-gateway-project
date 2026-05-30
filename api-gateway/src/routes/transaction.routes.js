@@ -10,10 +10,17 @@ const authMiddleware = require("../middleware/auth.middleware");
 
 const router = express.Router();
 
+const validate = require("../middleware/validation.middleware");
+
+const {
+  transactionSchema,
+} = require("../validators/transaction.validator");
+
 router.post(
   "/transactions",
   authMiddleware,
   roleMiddleware("station", "admin"),
+  validate(transactionSchema),
   createTransactionController
 );
 

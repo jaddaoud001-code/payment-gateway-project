@@ -2,6 +2,8 @@ const express = require("express");
 
 const app = express();
 
+const errorMiddleware = require("./middleware/error.middleware");
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -22,3 +24,5 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
+
+app.use(errorMiddleware);

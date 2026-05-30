@@ -22,14 +22,6 @@ const processTransaction = async ({
   try {
     await client.query("BEGIN");
 
-    if (!amount || !stationId) {
-      throw new Error("Missing required fields");
-    }
-
-    if (amount <= 0) {
-      throw new Error("Invalid amount");
-    }
-
     const card = await getCardByUserId(userId);
 
     if (!card) {
